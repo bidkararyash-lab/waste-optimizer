@@ -51,6 +51,21 @@ export async function requireOrg(
   };
 }
 
+/**
+ * Same as requireOrg but returns null instead of throwing when the user has
+ * no membership. Read-only queries use this so onboarding screens (no org
+ * yet) render empty data instead of crashing.
+ */
+export async function requireOrgNullable(
+  ctx: QueryCtx | MutationCtx,
+): Promise<OrgContext | null> {
+  try {
+    return await requireOrg(ctx);
+  } catch {
+    return null;
+  }
+}
+
 /** Manager (or owner) required for writes on catalog/settings/reporting. */
 export function assertManager(ctx: OrgContext) {
   if (!MANAGER_ROLES.includes(ctx.role)) {

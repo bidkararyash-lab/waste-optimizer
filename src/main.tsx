@@ -13,6 +13,10 @@ import "./index.css";
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const Inventory = lazy(() => import("./pages/Inventory.tsx"));
+const Waste = lazy(() => import("./pages/Waste.tsx"));
+const Alerts = lazy(() => import("./pages/Alerts.tsx"));
+const Settings = lazy(() => import("./pages/Settings.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -129,6 +133,46 @@ createRoot(document.getElementById("root")!).render(
                 element={
                   <RequireAuth>
                     <Dashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app"
+                element={
+                  <RequireAuth redirectImmediately>
+                    <Dashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/inventory"
+                element={
+                  <RequireAuth redirectImmediately>
+                    <Inventory />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/waste"
+                element={
+                  <RequireAuth redirectImmediately>
+                    <Waste />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/alerts"
+                element={
+                  <RequireAuth redirectImmediately>
+                    <Alerts />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/settings"
+                element={
+                  <RequireAuth redirectImmediately>
+                    <Settings />
                   </RequireAuth>
                 }
               />

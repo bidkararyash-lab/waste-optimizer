@@ -27,8 +27,9 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, { name, type }) => {
-    const { orgId } = await requireOrg(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
     return ctx.db.insert("locations", { orgId, name, type });
   },
 });
@@ -48,8 +49,9 @@ export const update = mutation({
     ),
   },
   handler: async (ctx, { locationId, name, type }) => {
-    const { orgId } = await requireOrg(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
 
     const loc = await ctx.db.get(locationId);
     if (!loc || loc.orgId !== orgId) {
@@ -67,8 +69,9 @@ export const update = mutation({
 export const remove = mutation({
   args: { locationId: v.id("locations") },
   handler: async (ctx, { locationId }) => {
-    const { orgId } = await requireOrg(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
 
     const loc = await ctx.db.get(locationId);
     if (!loc || loc.orgId !== orgId) {

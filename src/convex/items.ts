@@ -79,8 +79,9 @@ export const create = mutation({
     costPerUnit: v.number(), // minor units
   },
   handler: async (ctx, args) => {
-    const { orgId } = await requireOrg(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
 
     const duplicate = await ctx.db
       .query("items")
@@ -120,8 +121,9 @@ export const update = mutation({
     costPerUnit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const { orgId } = await requireOrg(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
 
     const item = await ctx.db.get(args.itemId);
     if (!item || item.orgId !== orgId) {
@@ -148,8 +150,9 @@ export const update = mutation({
 export const remove = mutation({
   args: { itemId: v.id("items") },
   handler: async (ctx, { itemId }) => {
-    const { orgId } = await requireOrg(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
 
     const item = await ctx.db.get(itemId);
     if (!item || item.orgId !== orgId) {
@@ -160,6 +163,4 @@ export const remove = mutation({
   },
 });
 
-/** Exported for client-side categories convenience. */
-export type ItemWithStock = Awaited<ReturnType<typeof list>>[number];
 export type ItemId = Id<"items">;

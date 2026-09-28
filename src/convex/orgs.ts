@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { WastedError, assertManager, getMembership } from "./helpers";
+import { WastedError, assertManager, getMembership, requireOrg } from "./helpers";
 import { seedDemoData } from "./seed";
 
 /** Get the caller's org + membership; null when signed out / not onboarded. */
@@ -14,6 +14,30 @@ export const getMyOrg = query({
     if (!membership) return { membership: null, org: null };
     const org = await ctx.db.get(membership.orgId);
     return { membership, org };
+  },
+});
+
+/** Team members of the caller's org (for Settings → Team). */
+export const listMembers = query({
+  args: {},
+  handler: async (ctx) => {
+    const { orgId } = await requireOrg(ctx);
+    const rows = await ctx.db
+      .query("members")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .collect();
+    return Promise.all(
+      rows.map(async (m) => {
+        const user = await ctx.db.get(m.userId);
+        return {
+          _id: m._id,
+          role: m.role,
+          userId: m.userId,
+          userName: user?.name ?? null,
+          userEmail: user?.email ?? null,
+        };
+      }),
+    );
   },
 });
 
@@ -59,8 +83,9 @@ export const updateOrg = mutation({
     alertDigestEmail: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const { orgId } = await requireOrgFromQuery(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
     const org = await ctx.db.get(orgId);
     if (!org) throw new WastedError("NOT_FOUND", "Organization not found.");
 
@@ -98,8 +123,9 @@ export const updateOrg = mutation({
 export const loadDemoData = mutation({
   args: {},
   handler: async (ctx) => {
-    const { orgId } = await requireOrgFromQuery(ctx);
-    assertManager(ctx);
+    const me = await requireOrg(ctx);
+    assertManager(me);
+    const orgId = me.orgId;
 
     const org = await ctx.db.get(orgId);
     if (!org) throw new WastedError("NOT_FOUND", "Organization not found.");
@@ -112,7 +138,3 @@ export const loadDemoData = mutation({
     return { ok: true };
   },
 });
-
-async function requireOrgFromQuery(ctx: Parameters<typeof requireOrg>[0]) {
-  return requireOrg(ctx);
-}
