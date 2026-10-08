@@ -408,23 +408,37 @@ function InventoryContent() {
 
       {/* Receive dialog */}
       {receiveFor && locations && (
-        <ReceiveDialog
-          itemId={receiveFor.itemId}
-          itemName={receiveFor.name}
-          locations={locations}
-          onClose={() => setReceiveFor(null)}
-        />
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setReceiveFor(null);
+          }}
+        >
+          <ReceiveDialog
+            itemId={receiveFor.itemId}
+            itemName={receiveFor.name}
+            locations={locations}
+            onClose={() => setReceiveFor(null)}
+          />
+        </Dialog>
       )}
 
       {/* Quick waste dialog */}
       {wasteFor && (
-        <QuickWasteDialog
-          batchId={wasteFor.batchId}
-          itemId={wasteFor.itemId}
-          itemName={wasteFor.itemName}
-          maxQty={wasteFor.maxQty}
-          onClose={() => setWasteFor(null)}
-        />
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setWasteFor(null);
+          }}
+        >
+          <QuickWasteDialog
+            batchId={wasteFor.batchId}
+            itemId={wasteFor.itemId}
+            itemName={wasteFor.itemName}
+            maxQty={wasteFor.maxQty}
+            onClose={() => setWasteFor(null)}
+          />
+        </Dialog>
       )}
     </div>
   );
