@@ -128,7 +128,7 @@ function SettingsContent() {
                   >
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {["USD", "EUR", "GBP", "CAD", "AUD", "AED", "SGD"].map((c) => (
+                      {["USD", "EUR", "GBP", "CAD", "AUD", "AED", "SGD", "INR"].map((c) => (
                         <SelectItem key={c} value={c}>{c}</SelectItem>
                       ))}
                     </SelectContent>
