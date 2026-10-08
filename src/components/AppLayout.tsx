@@ -1,7 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,7 +25,7 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import type { ReactNode } from "react";
 
@@ -185,20 +184,23 @@ function Onboarding() {
   const { user } = useAuth();
   const createOrg = useMutation(api.orgs.createOrganization);
   const loadDemo = useMutation(api.orgs.loadDemoData);
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string | null>(null);
   const [busy, setBusy] = useState<"create" | "demo" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user?.name && !name) setName(`${user.name.split(" ")[0]}'s Kitchen`);
-  }, [user?.name]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Prefill suggestion derived during render — no effect needed.
+  const suggestedName = user?.name
+    ? `${user.name.split(" ")[0]}'s Kitchen`
+    : "";
+  const displayName = name ?? suggestedName;
 
   const create = async () => {
-    if (!name.trim()) return;
+    const orgName = displayName.trim();
+    if (!orgName) return;
     setBusy("create");
     setError(null);
     try {
-      await createOrg({ name: name.trim() });
+      await createOrg({ name: orgName });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
@@ -210,7 +212,7 @@ function Onboarding() {
     setBusy("demo");
     setError(null);
     try {
-      await createOrg({ name: name.trim() || "Demo Kitchen" });
+      await createOrg({ name: displayName.trim() || "Demo Kitchen" });
       await loadDemo({});
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -240,13 +242,13 @@ function Onboarding() {
             </label>
             <Input
               id="org-name"
-              value={name}
+              value={displayName}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Harbor Cafe & Bakery"
               onKeyDown={(e) => e.key === "Enter" && create()}
             />
           </div>
-          <Button className="w-full gap-2" onClick={create} disabled={!name.trim() || busy !== null}>
+          <Button className="w-full gap-2" onClick={create} disabled={!displayName.trim() || busy !== null}>
             {busy === "create" ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (

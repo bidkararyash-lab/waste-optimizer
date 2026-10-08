@@ -31,13 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
-import {
-  CalendarDays,
-  Clock,
-  Search,
-  ShieldX,
-  Trash2,
-} from "lucide-react";
+import { Search, ShieldX, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   Bar,
@@ -95,7 +89,8 @@ function WasteContent() {
   const orgState = useQuery(api.orgs.getMyOrg);
   const currency = orgState?.org?.currency ?? "USD";
 
-  const items = useQuery(api.items.list) ?? [];
+  const itemsQuery = useQuery(api.items.list);
+  const items = useMemo(() => itemsQuery ?? [], [itemsQuery]);
   const batches = useQuery(api.batches.list, {}) ?? [];
   const analytics = useQuery(api.waste.analytics, { days: 30 });
   const history = useQuery(api.waste.history, { limit: 50 });

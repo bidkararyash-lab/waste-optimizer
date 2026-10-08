@@ -35,14 +35,20 @@ export const list = query({
           .collect();
         const active = batches.filter((b) => b.qtyOnHand > 0);
         const onHand = active.reduce((sum, b) => sum + b.qtyOnHand, 0);
-        const nextExpiry = active
+        const nextExpiryAt = active
           .filter((b) => b.expiresAt !== undefined)
-          .sort((a, b) => (a.expiresAt ?? 0) - (b.expiresAt ?? 0))[0];
+          .sort((a, b) => (a.expiresAt ?? 0) - (b.expiresAt ?? 0))[0]?.expiresAt;
         return {
           ...item,
           onHand,
           batchCount: active.length,
-          nextExpiry: nextExpiry?.expiresAt,
+          nextExpiry: nextExpiryAt,
+          // Days until the earliest expiry, computed server-side so the UI
+          // never has to call Date.now() during render (react-hooks/purity).
+          nextExpiryDaysLeft:
+            nextExpiryAt !== undefined
+              ? Math.ceil((nextExpiryAt - Date.now()) / 86_400_000)
+              : null,
         };
       }),
     );

@@ -2,13 +2,7 @@ import { api } from "@/convex/_generated/api";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -23,8 +17,6 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { useState } from "react";
-
-type AlertStatus = "open" | "acknowledged" | "snoozed" | "resolved";
 
 const TYPE_META: Record<
   string,

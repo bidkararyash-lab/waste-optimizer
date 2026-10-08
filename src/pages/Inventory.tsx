@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
@@ -38,7 +37,6 @@ import {
   Barcode,
   Boxes,
   CalendarClock,
-  CircleDollarSign,
   MapPin,
   Package,
   PackagePlus,
@@ -48,8 +46,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
-
-const DAY = 86_400_000;
 
 const STORAGE_BADGE: Record<string, string> = {
   ambient: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
@@ -199,7 +195,6 @@ function InventoryContent() {
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {filteredItems.map((item) => {
-                const below = item.onHand < item.reorderPoint;
                 return (
                   <Card key={item._id} className="card-soft group rounded-2xl transition-all hover:-translate-y-0.5">
                     <CardHeader className="pb-3">
@@ -252,7 +247,8 @@ function InventoryContent() {
                           <CalendarClock className="size-3.5 text-amber-500" />
                           Next expiry{" "}
                           {fmtDate(item.nextExpiry)}
-                          {item.nextExpiry - Date.now() < 3 * DAY && (
+                          {item.nextExpiryDaysLeft !== null &&
+                            item.nextExpiryDaysLeft <= 3 && (
                             <Badge variant="outline" className="ml-1 border-amber-300/60 text-[10px] text-amber-600">
                               soon
                             </Badge>

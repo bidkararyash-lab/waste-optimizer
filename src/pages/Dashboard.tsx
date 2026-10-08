@@ -12,7 +12,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -26,16 +26,11 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
   Cell,
   Pie,
   PieChart,
   ResponsiveContainer,
   Tooltip as ReTooltip,
-  XAxis,
-  YAxis,
 } from "recharts";
 
 const REASON_COLORS: Record<string, string> = {
@@ -79,7 +74,6 @@ export default function Dashboard() {
 function DashboardContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const runSweep = useMutation(api.alerts.sweep);
 
   const orgState = useQuery(api.orgs.getMyOrg);
   const currency = orgState?.org?.currency ?? "USD";
